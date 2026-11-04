@@ -661,6 +661,45 @@ local function HideEmptyVehicleButtons()
     end
 end
 
+<<<<<<< HEAD
+=======
+-- Our slot events can beat the button's own, so a late action must light up from its update.
+local slotUpdatesHooked = false
+local function HookVehicleSlotUpdates()
+    if slotUpdatesHooked then return end
+    slotUpdatesHooked = true
+    hooksecurefunc("ActionButton_Update", function(button)
+        if button.alwaysBonus and vehiclebar then
+            HideEmptyVehicleButtons()
+        end
+    end)
+end
+
+-- VehicleMenuBar stays hidden, so ActionButtonDown pushes the hidden ActionButtonN instead of ours.
+local keyPushed = {}
+local keyPressesHooked = false
+local function HookVehicleKeyPresses()
+    if keyPressesHooked then return end
+    keyPressesHooked = true
+    hooksecurefunc("ActionButtonDown", function(id)
+        if not (vehiclebar and vehiclebar:IsVisible()) or id > VEHICLE_MAX_ACTIONBUTTONS then return end
+        local button = _G["VehicleMenuBarActionButton" .. id]
+        if button and button:GetButtonState() == "NORMAL" then
+            button:SetButtonState("PUSHED")
+            keyPushed[id] = button
+        end
+    end)
+    hooksecurefunc("ActionButtonUp", function(id)
+        local button = keyPushed[id]
+        if not button then return end
+        keyPushed[id] = nil
+        if button:GetButtonState() == "PUSHED" then
+            button:SetButtonState("NORMAL")
+        end
+    end)
+end
+
+>>>>>>> 1b53c0f3 (fix(vehicle): vehicle buttons look pressed when used from the keyboard #625)
 -- Restore all vehicle buttons to normal state when exiting vehicle
 local function RestoreVehicleButtons()
     -- Seat swaps fire EXITED while still mounted; restoring there re-lights the empty slots.
@@ -995,6 +1034,12 @@ local function ApplyVehicleSystem()
         -- driver can Show the bar mid-combat (Malygos drakes). The skin is applied on UNIT_ENTERING_VEHICLE.
         positionVehicleButtons()
 
+<<<<<<< HEAD
+=======
+        HookVehicleSlotUpdates()
+        HookVehicleKeyPresses()
+
+>>>>>>> 1b53c0f3 (fix(vehicle): vehicle buttons look pressed when used from the keyboard #625)
         -- Pre-style vehicle buttons NOW so they already have Dragonflight
         -- borders when the state driver shows them. Without this, buttons
         -- flash with Blizzard's default large borders for a split second
