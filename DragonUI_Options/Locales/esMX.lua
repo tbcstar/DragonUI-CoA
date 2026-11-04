@@ -65,7 +65,11 @@ L["Use the scale that draws one interface pixel per screen pixel at your resolut
 
 L["Commands: /dragonui, /dui, /pi \226\128\148 /dragonui edit (editor) \226\128\148 /dragonui help"] = "Comandos: /dragonui, /dui, /pi \226\128\148 /dragonui edit (editor) \226\128\148 /dragonui help"
 L["GitHub (select and Ctrl+C to copy):"] = "GitHub (selecciona y Ctrl+C para copiar):"
+<<<<<<< HEAD
 L["Help me on GitHub (select and Ctrl+C to copy):"] = "Ayúdame en GitHub (selecciona y Ctrl+C para copiar):"
+=======
+L["New version available! (v%s)"] = "¡Nueva versión disponible! (v%s)"
+>>>>>>> 09542f04 (feat(versioncheck): update notices only trust our signed releases)
 L["All"] = "Todo"
 L["Error:"] = "Error:"
 L["Error: DragonUI addon not found!"] = "Error: ¡No se encontró el addon DragonUI!"
