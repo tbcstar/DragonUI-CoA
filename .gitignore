@@ -21,6 +21,7 @@ _ref-*/
 docs/
 .serena/
 .codegraph/
+.dshwolf/
 
 # Build artifact: the release asset is uploaded from the local file, never committed
 DragonUI.zip

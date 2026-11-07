@@ -1410,7 +1410,7 @@ L["Keep the target nameplate visible at the top of the screen. Extends WorldFram
 L["Clamp Bosses to Screen"] = "Boss 固定在螢幕內"
 L["Clamp Top Inset"] = "頂部邊距"
 L["Distance below the top edge where clamped nameplates stop."] = "固定名牌停止的頂部下方距離。"
-L["Bars"] = "條"
+L["Bars"] = "能量與施法條"
 L["Clickbox"] = "點擊區域"
 L["Clickbox Width Factor"] = "點擊區域寬度係數"
 L["Clickbox Height Factor"] = "點擊區域高度係數"

@@ -183,10 +183,16 @@ if isCoAServer then
     MicromenuAtlas["UI-HUD-MicroMenu-Challenges-Down"] = {0.000976562, 0.0634766, 0.822266, 0.982422}
     MicromenuAtlas["UI-HUD-MicroMenu-Challenges-Mouseover"] = {0.0654297, 0.12793, 0.00195312, 0.162109}
     MicromenuAtlas["UI-HUD-MicroMenu-Challenges-Up"] = {0.0654297, 0.12793, 0.166016, 0.326172}
-    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Disabled"] = {0.0654297, 0.12793, 0.658203, 0.818359}
-    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Down"] = {0.0654297, 0.12793, 0.822266, 0.982422}
-    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Mouseover"] = {0.129883, 0.192383, 0.00195312, 0.162109}
-    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Up"] = {0.129883, 0.192383, 0.166016, 0.326172}
+    -- Path to Ascension is a Conquest of Azeroth-only button; the client's MicroMenu sheet has no
+    -- cell for it, and the coords that used to sit here were Collections' -- so both buttons drew
+    -- the very same Pets & Mounts horseshoe. It carries its own four-cell sheet instead
+    -- (Up, Mouseover, Down, Disabled). The fifth field is the file SetMicroStateTexture passes to
+    -- SetTexture, so neither the coloured pass nor the grayscale pass needs a special case here.
+    local PATH_TO_ASCENSION_ART = 'Interface\\AddOns\\DragonUI\\Textures\\Micromenu\\pathtoascension'
+    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Up"] = {0, 0.25, 0, 1, PATH_TO_ASCENSION_ART}
+    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Mouseover"] = {0.25, 0.5, 0, 1, PATH_TO_ASCENSION_ART}
+    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Down"] = {0.5, 0.75, 0, 1, PATH_TO_ASCENSION_ART}
+    MicromenuAtlas["UI-HUD-MicroMenu-PathToAscension-Disabled"] = {0.75, 1, 0, 1, PATH_TO_ASCENSION_ART}
 end
 
 -- The fifth field names the file: DragonUI's colour sheet predates the professions icon.
@@ -484,8 +490,30 @@ end
 -- a name it does not know -- so the two buttons Conquest of Azeroth ships that retail never had (Path
 -- to Ascension, Challenges) threw here and aborted the whole strip pass, leaving 9 of 13 drawn.
 -- Resolve our own entry first, then fall back to the colored crop those two do have.
+-- A button that owns a desaturated sheet of its own is resolved before addon.atlasinfo and before
+-- that colored fallback, so it can never end up drawing a neighbour's art again.
+local MICRO_GRAY_SHEETS = {
+    pathtoascension = 'Interface\\AddOns\\DragonUI\\Textures\\Micromenu\\pathtoascension_gray',
+}
+-- Cells are laid out Up, Mouseover, Down, Disabled -- the same order as the coloured sheet.
+local MICRO_GRAY_CELLS = {
+    up = {0, 0.25, 0, 1},
+    mouseover = {0.25, 0.5, 0, 1},
+    down = {0.5, 0.75, 0, 1},
+    disabled = {0.75, 1, 0, 1},
+}
+
 local function SetGrayStateTexture(buttonName, texture, atlasSuffix, coloredSuffix)
     if not texture then return end
+    local ownSheet = MICRO_GRAY_SHEETS[buttonName]
+    if ownSheet then
+        local cell = MICRO_GRAY_CELLS[atlasSuffix]
+        if cell then
+            texture:SetTexture(ownSheet)
+            texture:SetTexCoord(cell[1], cell[2], cell[3], cell[4])
+            return
+        end
+    end
     local atlasName = 'ui-hud-micromenu-' .. buttonName .. '-' .. atlasSuffix .. '-2x'
     if addon.atlasinfo and addon.atlasinfo[atlasName] then
         texture:SetAtlasTexture(atlasName)
