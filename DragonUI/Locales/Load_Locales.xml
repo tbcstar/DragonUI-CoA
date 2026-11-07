@@ -11,6 +11,7 @@
 	<Script file="frFR.lua"/>
 	<Script file="ruRU.lua"/>
 	<Script file="zhCN.lua"/>
+	<Script file="zhCN_force.lua"/>
 	<Script file="zhTW.lua"/>
 	<Script file="koKR.lua"/>
 
