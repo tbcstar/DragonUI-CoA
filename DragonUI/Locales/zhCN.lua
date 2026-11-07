@@ -763,7 +763,7 @@ L["Show Zone Levels"] = "显示区域等级"
 L["Show Map Coordinates"] = "显示地图坐标"
 
 -- Level Up Enhance Module
-L["LevelUpFrame"] = "Level Up"
+L["LevelUpFrame"] = "升级"
 L["Enhanced tooltip styling with class colors and health bars"] = "带有职业颜色和生命条的增强提示样式"
 L["Level Up Enhance"] = "升级增强"
 L["Enhanced level-up notification with animated frame"] = "带有动画边框的增强升级通知"
@@ -959,7 +959,7 @@ L["Percentage"] = "百分比"
 L["Numbers + %"] = "数值 + %"
 L["Current / Max"] = "当前 / 最大"
 L["Auto"] = "自动"
-L["Forever"] = "Forever"
+L["Forever"] = "经典"
 L["Text Format"] = "文本格式"
 L["Format Large Numbers"] = "大数字缩写格式"
 L["Always Show Health Text"] = "始终显示生命值文本"
@@ -1246,3 +1246,9 @@ L["ModuleRegistry: post-hook failed for"] = "ModuleRegistry：post-hook 失败�
 L["ModuleRegistry: pre-hook failed for"] = "ModuleRegistry：pre-hook 失败："
 L["Scale"] = "缩放"
 L["Transmog collection API is not available yet. Please try again in a few seconds."] = "幻化收藏 API 尚不可用。请稍后再试。"
+
+-- 补齐 enUS 中已有、本语言原先缺失的条目
+L["Sold %d junk item(s)."] = "已出售 %d 件垃圾物品。"
+L["BUYBACK"] = "回购"
+L["The bank is closed."] = "银行已关闭。"
+L["bnToast"] = "好友上下线提示"
