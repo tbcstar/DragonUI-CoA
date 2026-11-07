@@ -20,9 +20,29 @@ btn:SetDisabledTexture(ICON)
 btn:SetHighlightTexture(ICON)
 btn:GetHighlightTexture():SetBlendMode("ADD")
 
--- The Key Bindings window reads BINDING_NAME_* globals, not AceLocale.
 local BINDING = "DRAGONUI_TOGGLE_COLLECTIONS"
-_G["BINDING_NAME_" .. BINDING] = addon.L["Pets & Mounts"]
+
+-- The Key Bindings window reads BINDING_NAME_* globals, and 3.3.5's tooltip helper reads the button
+-- fields -- so all three hold plain strings. None of them may be read at file scope: modules load
+-- before ADDON_LOADED, which is the first moment the stored language override can be read
+-- (core.lua:46 calls addon.RefreshLocale there), so an eager read freezes the client's own locale
+-- into the tooltip for the whole session -- Chinese UI with an English "Pets & Mounts" tooltip.
+local function RefreshText()
+    local name = addon.L["Pets & Mounts"]
+    _G["BINDING_NAME_" .. BINDING] = name
+    btn.tooltipText = name
+    btn.newbieText = addon.L["The mounts and pets you have collected."]
+end
+RefreshText()
+
+local localeWatch = CreateFrame("Frame")
+localeWatch:RegisterEvent("ADDON_LOADED")
+localeWatch:SetScript("OnEvent", function(self, event, name)
+    if name ~= "DragonUI" then return end
+    self:UnregisterEvent("ADDON_LOADED")
+    -- core.lua registered its OnInitialize earlier, so the locale is already re-pointed here.
+    RefreshText()
+end)
 
 btn:RegisterForClicks("LeftButtonUp")
 btn:SetScript("OnClick", function()
@@ -30,8 +50,6 @@ btn:SetScript("OnClick", function()
 end)
 -- What MainMenuBarMicroButton's own OnEnter does: it is what puts every other micro menu tooltip at
 -- the default anchor and prints the second line in NORMAL_FONT_COLOR.
-btn.tooltipText = addon.L["Pets & Mounts"]
-btn.newbieText = addon.L["The mounts and pets you have collected."]
 btn:SetScript("OnEnter", function(self)
     -- Rebuilt per hover rather than cached: a rebind would otherwise show the old key until reload.
     local text = self.tooltipText
