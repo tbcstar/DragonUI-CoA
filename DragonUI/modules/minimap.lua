@@ -1,4 +1,4 @@
-﻿-- Copyright (c) 2026 NeticSoul. Licensed under the MIT License; see LICENSE.
+-- Copyright (c) 2026 NeticSoul. Licensed under the MIT License; see LICENSE.
 -- Portions adapted from RetailUI (MIT, (c) 2024 Dmitriy); see THIRD_PARTY_NOTICES.
 
 -- ============================================================================
@@ -2417,6 +2417,36 @@ do
     end
 end
 
+-- UnitFactionGroup is not guaranteed to hand back "Horde"/"Alliance": the CoA client localizes it
+-- (it has been seen returning 玩家), and lua-casing that straight into the atlas name made
+-- SetAtlasTexture raise "unknown atlas" and kill the whole minimap module refresh. Only the two
+-- sides the atlas has art for are mapped; anything else leaves the button stock instead of erroring.
+local FACTION_ATLAS_GROUPS = {
+    horde = "horde",
+    alliance = "alliance",
+}
+
+local function ResolveFactionAtlasKey(faction)
+    if type(faction) ~= "string" then
+        return nil
+    end
+
+    local group = FACTION_ATLAS_GROUPS[faction:lower()]
+    if group then
+        return group
+    end
+
+    -- Localized clients answer with the localized side name, so compare against their own constants.
+    if faction == _G.HORDE then
+        return "horde"
+    end
+    if faction == _G.ALLIANCE then
+        return "alliance"
+    end
+
+    return nil
+end
+
 -- Style PVP battleground frame with faction detection
 local function StylePVPBattlefieldFrame()
     if not MiniMapBattlefieldFrame then
@@ -2430,12 +2460,11 @@ local function StylePVPBattlefieldFrame()
     else
         pvpButton:SetSinglePoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 18)
     end
-    pvpButton:SetNormalTexture("")
-    pvpButton:SetPushedTexture("")
-
-    local faction = UnitFactionGroup("player")
-    if faction then
-        local atlasPrefix = "Minimap-PVP-" .. faction:lower()
+    local group = ResolveFactionAtlasKey(UnitFactionGroup("player"))
+    if group then
+        local atlasPrefix = "Minimap-PVP-" .. group
+        pvpButton:SetNormalTexture("")
+        pvpButton:SetPushedTexture("")
         local normal, pushed = pvpButton:GetNormalTexture(), pvpButton:GetPushedTexture()
         if normal then normal:SetAtlasTexture(atlasPrefix .. "-Normal", true) end
         if pushed then pushed:SetAtlasTexture(atlasPrefix .. "-Pushed", true) end
