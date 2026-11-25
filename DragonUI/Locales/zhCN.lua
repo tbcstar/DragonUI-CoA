@@ -1256,3 +1256,12 @@ L["Sold %d junk item(s)."] = "已出售 %d 件垃圾物品。"
 L["BUYBACK"] = "回购"
 L["The bank is closed."] = "银行已关闭。"
 L["bnToast"] = "好友上下线提示"
+
+-- ============================================================================
+-- BNET TOAST（战网/好友上下线提示）
+-- ============================================================================
+
+L["%s has come online."] = "%s |cff88FF88上线了|r"
+L["%s has gone offline."] = "%s |cffFF4444下线了|r"
+L["%s (%s) has come online."] = "%s（%s） |cff88FF88上线了|r"
+L["%s (%s) has gone offline."] = "%s（%s） |cffFF4444下线了|r"

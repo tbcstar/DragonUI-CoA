@@ -22,6 +22,7 @@ local GetFriendInfo = GetFriendInfo
 local GetNumFriends = GetNumFriends
 local PlaySound = PlaySound
 local strmatch = string.match
+local L = addon.L or {}
 
 -- Patterns to extract friend name from system messages
 local pattern1 = ERR_FRIEND_ONLINE_SS:gsub("%%s", "(%.+)"):gsub("%[", "%%["):gsub("%]","%%]")
@@ -213,35 +214,32 @@ local ICON_FRIEND  = "|TInterface\\FriendsFrame\\PlusManz-PlusManz:14:14|t"
 -- CHAT NOTIFICATION
 -- ============================================================================
 
-local function BuildFriendOnlineMessage(bnetName, toonName)
+local function FriendMessage(icon, bnetName, toonName, online)
     -- Colors from Blizzard's FriendsFrame.lua
     local C = "|cff82c5ff" -- FRIENDS_BNET_NAME_COLOR (#82C5FF)
-    local G = "|cff88FF88" -- Green for online text
     local Y = "|cffFDE05C" -- FRIENDS_WOW_NAME_COLOR (#FDE05C) for toon name
     local R = "|r"
 
-    local msg = ICON_ONLINE .. ICON_FRIEND .. " "
-        .. C .. bnetName .. R
-        .. " " .. C .. "Added as:" .. R
-        .. " " .. Y .. "(" .. toonName .. ")" .. R
-        .. " " .. C .. "has come " .. G .. "online" .. R .. "."
+    local nameText = C .. tostring(bnetName) .. R
 
-    return msg
+    -- On Conquest of Azeroth the battle.net name and the toon name are usually the
+    -- same, and the old line then read "Name Added as: (Name)". Only name the toon
+    -- when it really is a different character.
+    if toonName and toonName ~= "" and toonName ~= bnetName then
+        local key = online and "%s (%s) has come online." or "%s (%s) has gone offline."
+        return icon .. " " .. string.format((addon.L or L)[key] or key, nameText, Y .. tostring(toonName) .. R)
+    end
+
+    local key = online and "%s has come online." or "%s has gone offline."
+    return icon .. " " .. string.format((addon.L or L)[key] or key, nameText)
+end
+
+local function BuildFriendOnlineMessage(bnetName, toonName)
+    return FriendMessage(ICON_ONLINE .. ICON_FRIEND, bnetName, toonName, true)
 end
 
 local function BuildFriendOfflineMessage(bnetName, toonName)
-    local C = "|cff82c5ff" -- FRIENDS_BNET_NAME_COLOR (#82C5FF)
-    local RED = "|cffFF4444" -- Red for offline text
-    local Y = "|cffFDE05C" -- FRIENDS_WOW_NAME_COLOR (#FDE05C) for toon name
-    local R = "|r"
-
-    local msg = ICON_OFFLINE .. ICON_FRIEND .. " "
-        .. C .. bnetName .. R
-        .. " " .. C .. "Added as:" .. R
-        .. " " .. Y .. "(" .. toonName .. ")" .. R
-        .. " " .. C .. "has gone " .. RED .. "offline" .. R .. "."
-
-    return msg
+    return FriendMessage(ICON_OFFLINE .. ICON_FRIEND, bnetName, toonName, false)
 end
 
 local function SendChatNotification(name, isOnline)

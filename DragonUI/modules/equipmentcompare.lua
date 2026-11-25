@@ -37,6 +37,27 @@ local function IsSuppressed()
     return IsControlKeyDown and IsControlKeyDown() or false
 end
 
+-- The client's own alwaysCompareItems path does work here (confirmed on the Ascension
+-- 3.3.5a client), while the GameTooltip files there may never run OnTooltipSetItem, which
+-- left the checkbox doing nothing. Drive the cvar as well so the option works either way;
+-- Ctrl still suppresses the comparison, which is the same thing the cvar's ignore path does.
+local function SetCompareCvar(enabled)
+    if type(SetCVar) ~= "function" then
+        return
+    end
+    if enabled then
+        local current = type(GetCVar) == "function" and GetCVar("alwaysCompareItems") or nil
+        pcall(SetCVar, "alwaysCompareItems", "1")
+        if current ~= "1" then
+            -- Remember that we raised it, so turning the module off puts it back.
+            EquipmentCompareModule.ownsCvar = true
+        end
+    elseif EquipmentCompareModule.ownsCvar then
+        pcall(SetCVar, "alwaysCompareItems", "0")
+        EquipmentCompareModule.ownsCvar = nil
+    end
+end
+
 -- ============================================================================
 -- COMPARISON TOOLTIPS
 -- ============================================================================
@@ -163,6 +184,7 @@ local function ApplyEquipmentCompareSystem()
     if not IsModuleEnabled() then
         return
     end
+    SetCompareCvar(true)
     ForEachPair(InstallHooks)
 
     EquipmentCompareModule.applied = true
@@ -171,6 +193,7 @@ end
 
 local function RestoreEquipmentCompareSystem()
     ForEachPair(HideComparison)
+    SetCompareCvar(false)
     EquipmentCompareModule.applied = false
 end
 

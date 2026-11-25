@@ -1241,3 +1241,11 @@ L["Mail"] = true
 L["Retail-style mail window with Open All button"] = true
 L["Open All"] = true
 L["Opening..."] = true
+
+-- ============================================================================
+-- BNET TOAST
+-- ============================================================================
+L["%s has come online."] = true
+L["%s has gone offline."] = true
+L["%s (%s) has come online."] = true
+L["%s (%s) has gone offline."] = true
